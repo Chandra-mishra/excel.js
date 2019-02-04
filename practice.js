@@ -5,7 +5,7 @@ const multer = require('multer');
 const xlstojson = require("xls-to-json-lc");
 const xlsxtojson = require("xlsx-to-json-lc");
 app.use(bodyParser.json());
-var storage = multer.diskStorage({ //multers disk storage settings
+var storage = multer.diskStorage({ 
     destination: function (req, file, callback) {
         callback(null, './uploads/')
     },
@@ -14,16 +14,16 @@ var storage = multer.diskStorage({ //multers disk storage settings
         callback(null, file.fieldname + '-' + datetimestamp + '.' + file.originalname.split('.')[file.originalname.split('.').length -1])
     }
 });
-var upload = multer({ //multer settings
+var upload = multer({
                 storage: storage,
-                fileFilter : function(req, file, callback) { //file filter
+                fileFilter : function(req, file, callback) { 
                     if (['xls', 'xlsx'].indexOf(file.originalname.split('.')[file.originalname.split('.').length-1]) === -1) {
                         return callback(new Error('Wrong extension type'));
                     }
                     callback(null, true);
                 }
             }).single('file');
-/** API path that will upload the files */
+
 app.post('/upload', function(req, res) {
     var exceltojson;
     upload(req,res,function(err){
@@ -31,14 +31,12 @@ app.post('/upload', function(req, res) {
              res.json({error_code:1,err_desc:err});
              return;
         }
-        /** Multer gives us file info in req.file object */
+        
         if(!req.file){
             res.json({error_code:1,err_desc:"No file passed"});
             return;
         }
-        /** Check the extension of the incoming file and 
-         *  use the appropriate module
-         */
+      
         if(req.file.originalname.split('.')[req.file.originalname.split('.').length-1] === 'xlsx'){
             exceltojson = xlsxtojson;
         } else {
@@ -47,7 +45,7 @@ app.post('/upload', function(req, res) {
         try {
             exceltojson({
                 input: req.file.path,
-                output: null, //since we don't need output.json
+                output: null, 
                 lowerCaseHeaders:true
             }, function(err,result){
                 if(err) {
